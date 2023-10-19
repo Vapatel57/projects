@@ -29,6 +29,7 @@ int main(){
 }*/
 
 //pattern
+
 #include <stdio.h> 
 
 int fact(int i,int j);
@@ -54,6 +55,8 @@ int main() {
     }
     return 0;
 }
+
+//fibonacci series.
 
 // #include <stdio.h>
 // int main() {
