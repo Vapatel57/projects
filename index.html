@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #120f0f;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 5px;
+      margin-top: 20px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      border: 2px solid #333;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background-color: aqua;
+      color: #ab0707;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #f2f0f0;
+    }
+    button{
+      padding: 20px;
+      size: 20px;
+      font-size: 20px;
+    }
+  </style>
+  <title>Tic Tac Toe</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Tic Tac Toe</h1>
+    <div id="board" class="board">
+      <div class="cell" onclick="makeMove(this)"></div>
+      <div class="cell" onclick="makeMove(this)"></div>
+      <div class="cell" onclick="makeMove(this)"></div>
+      <div class="cell" onclick="makeMove(this)"></div>
+      <div class="cell" onclick="makeMove(this)"></div>
+      <div class="cell" onclick="makeMove(this)"></div>
+      <div class="cell" onclick="makeMove(this)"></div>
+      <div class="cell" onclick="makeMove(this)"></div>
+      <div class="cell" onclick="makeMove(this)"></div>
+    </div>
+    <p id="result" class="result"></p>
+    <button onclick="resetGame()">Reset Game</button>
+  </div>
+  <script>
+    let currentPlayer = 'X';
+    let gameBoard = ['', '', '', '', '', '', '', '', ''];
+    let gameActive = true;
+
+    function makeMove(cell) {
+      const cellIndex = Array.from(cell.parentNode.children).indexOf(cell);
+
+      if (gameBoard[cellIndex] === '' && gameActive) {
+        gameBoard[cellIndex] = currentPlayer;
+        cell.textContent = currentPlayer;
+
+        if (checkWinner()) {
+          document.getElementById('result').textContent = `${currentPlayer} wins!`;
+          gameActive = false;
+        } else if (!gameBoard.includes('')) {
+          document.getElementById('result').textContent = 'It\'s a tie!';
+          gameActive = false;
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+
+          if (currentPlayer === 'O') {
+            makeComputerMove();
+          }
+        }
+      }
+    }
+
+    function checkWinner() {
+      const winPatterns = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6]              // Diagonals
+      ];
+
+      for (const pattern of winPatterns) {
+        const [a, b, c] = pattern;
+        if (gameBoard[a] !== '' && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function makeComputerMove() {
+      // Check for winning moves
+      for (let i = 0; i < 9; i++) {
+        if (gameBoard[i] === '') {
+          gameBoard[i] = 'O';
+          if (checkWinner()) {
+            document.getElementById('board').children[i].textContent = 'O';
+            document.getElementById('result').textContent = 'Computer wins!';
+            gameActive = false;
+            return;
+          }
+          gameBoard[i] = ''; // Undo the move if it doesn't lead to a win
+        }
+      }
+
+      // Check for blocking moves
+      for (let i = 0; i < 9; i++) {
+        if (gameBoard[i] === '') {
+          gameBoard[i] = 'X';
+          if (checkWinner()) {
+            gameBoard[i] = 'O';
+            document.getElementById('board').children[i].textContent = 'O';
+            currentPlayer = 'X';
+            return;
+          }
+          gameBoard[i] = ''; // Undo the move if it doesn't block the player
+        }
+      }
+
+      // If no winning or blocking moves, make a random move
+      const emptyCells = gameBoard.reduce((acc, val, index) => {
+        if (val === '') {
+          acc.push(index);
+        }
+        return acc;
+      }, []);
+
+      const randomIndex = Math.floor(Math.random() * emptyCells.length);
+      const computerMove = emptyCells[randomIndex];
+
+      gameBoard[computerMove] = 'O';
+      document.getElementById('board').children[computerMove].textContent = 'O';
+
+      if (checkWinner()) {
+        document.getElementById('result').textContent = 'Computer wins!';
+        gameActive = false;
+      } else if (!gameBoard.includes('')) {
+        document.getElementById('result').textContent = 'It\'s a tie!';
+        gameActive = false;
+      } else {
+        currentPlayer = 'X';
+      }
+    }
+
+    function resetGame() {
+      currentPlayer = 'X';
+      gameBoard = ['', '', '', '', '', '', '', '', ''];
+      gameActive = true;
+      document.getElementById('result').textContent = '';
+      document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+
+      // If the computer is the first player, make a move
+      if (currentPlayer === 'O') {
+        makeComputerMove();
+      }
+    }
+  </script>
+</body>
+</html>
