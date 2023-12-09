@@ -1,0 +1,1 @@
+int playerruns=0,computerruns=0,n,num,x,no,ptarget,ctarget;
